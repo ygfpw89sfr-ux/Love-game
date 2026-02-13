@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Верни её доверие</title>
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #1e1e2f, #3a3a6a);
+  font-family: Arial, sans-serif;
+  color: white;
+  text-align: center;
+}
+
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.player {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  font-size: 40px;
+}
+
+.item {
+  position: absolute;
+  font-size: 30px;
+}
+
+#score {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 20px;
+}
+
+#finalScreen {
+  display: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+button {
+  padding: 15px 30px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  background: pink;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="game">
+  <div id="score">Доверие: 0</div>
+  <div class="player" id="player">❤️</div>
+</div>
+
+<div id="finalScreen">
+  <h1>Я прошёл испытание.</h1>
+  <p>Но настоящая победа — если ты дашь мне шанс пройти жизнь вместе с тобой.</p>
+  <button onclick="accept()">Дашь шанс?</button>
+</div>
+
+<script>
+let player = document.getElementById("player");
+let game = document.getElementById("game");
+let scoreDisplay = document.getElementById("score");
+let finalScreen = document.getElementById("finalScreen");
+
+let score = 0;
+let playerX = window.innerWidth / 2;
+
+document.addEventListener("mousemove", function(e){
+  playerX = e.clientX;
+  player.style.left = playerX + "px";
+});
+
+function createItem(){
+  let item = document.createElement("div");
+  item.classList.add("item");
+
+  let good = Math.random() > 0.3;
+
+  item.innerHTML = good ? "💖" : "💔";
+  item.style.left = Math.random() * window.innerWidth + "px";
+  item.style.top = "0px";
+  game.appendChild(item);
+
+  let fall = setInterval(function(){
+    item.style.top = item.offsetTop + 5 + "px";
+
+    if(item.offsetTop > window.innerHeight - 60){
+      if(Math.abs(item.offsetLeft - playerX) < 50){
+        if(good){
+          score++;
+        } else {
+          score = Math.max(0, score - 1);
+        }
+        scoreDisplay.innerText = "Доверие: " + score;
+      }
+      game.removeChild(item);
+      clearInterval(fall);
+
+      if(score >= 15){
+        endGame();
+      }
+    }
+  }, 30);
+}
+
+function endGame(){
+  finalScreen.style.display = "flex";
+}
+
+function accept(){
+  finalScreen.innerHTML = "<h1>Спасибо ❤️</h1><p>Я не подведу.</p>";
+}
+
+setInterval(createItem, 1000);
+</script>
+
+</body>
+</html>
